@@ -1,6 +1,6 @@
-name: CI - Nowatorski Projekt
+name: CI/CD - Build, Test & Publish Docker Image
 
-# workflow przy każdym push do main
+# workflow przy każdym wypchnięciu zmian na main
 on:
   push:
     branches: [ "main" ]
@@ -8,18 +8,34 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  build-and-publish:
     runs-on: ubuntu-latest
-
+    
     steps:
-      # pobierz kod z repozytorium
+      # pobranie kodu z repozytorium
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # wyświetl prosty komunikat
-      - name: Run a script
-        run: echo "Udało się! Kod z repozytorium został pobrany."
+      # konfiguracja Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      # wyświetl listę plików
-      - name: List files
-        run: ls -la
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # build i test
+      - name: Build and Push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true # wysyła obraz do Docker Hub
+          # tworzy nazwę obrazu
+          tags: ${{ secrets.DOCKER_USERNAME }}/nowatorski_projekt_ind:latest
+
+      # informacja końcowa
+      - name: Success Message
+        run: echo "Obraz został zbudowany i wysłany na Docker Hub!"
