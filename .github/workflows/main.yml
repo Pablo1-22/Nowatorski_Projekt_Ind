@@ -31,20 +31,18 @@ jobs:
 
       # testy wewnątrz kontenera -T wyłącza interaktywny terminal
       - name: Run Tests inside Docker
-        run: docker compose exec -T web pytest
+        run: docker git compose exec -T web pytest
 
       # zatrzymanie kontenerów
       - name: Tear down Docker Compose
         run: docker compose down
 
-      # 6. budowanie i publikacja finalnego obrazu jeśli testy przeszły
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
+      # budowanie i publikacja finalnego obrazu jeśli testy przeszły
       - name: Build and Push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile
-          push: true
+          # push wtedy, gdy to nie jest pull request
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ secrets.DOCKER_USERNAME }}/nowatorski_projekt_ind:latest
