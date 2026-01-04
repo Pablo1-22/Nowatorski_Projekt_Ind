@@ -34,7 +34,7 @@ jobs:
           file: ./Dockerfile
           push: true # wysyła obraz do Docker Hub
           # tworzy nazwę obrazu
-          tags: ${{ secrets.DOCKER_USERNAME }}/nowatorski_projekt_ind:latest
+          tags: pablo1-22/nowatorski_projekt_ind:latest
 
       # informacja końcowa
       - name: Success Message
