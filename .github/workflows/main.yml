@@ -1,0 +1,25 @@
+name: CI - Nowatorski Projekt
+
+# workflow przy każdym push do main
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # pobierz kod z repozytorium
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # wyświetl prosty komunikat
+      - name: Run a script
+        run: echo "Udało się! Kod z repozytorium został pobrany."
+
+      # wyświetl listę plików
+      - name: List files
+        run: ls -la
