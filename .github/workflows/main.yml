@@ -25,17 +25,17 @@ jobs:
       # uruchomienie środowiska testowego
       - name: Start services with Docker Compose
         run: |
-          docker-compose up -d --build
+          docker compose up -d --build
           echo "Czekam 10 sekund na start bazy danych..."
           sleep 10  # Proste oczekiwanie na gotowość Postgresa
 
       # testy wewnątrz kontenera -T wyłącza interaktywny terminal
       - name: Run Tests inside Docker
-        run: docker-compose exec -T web pytest
+        run: docker compose exec -T web pytest
 
       # zatrzymanie kontenerów
       - name: Tear down Docker Compose
-        run: docker-compose down
+        run: docker compose down
 
       # 6. budowanie i publikacja finalnego obrazu jeśli testy przeszły
       - name: Set up Docker Buildx
