@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  # Serwis aplikacji
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/myapp
+    depends_on:
+      - db
+    # Spełnia wymóg: aplikacja + baza danych (dwa kontenery) 
+
+  # Serwis bazy danych (komponent stanowy) [cite: 19]
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: myapp
+    ports:
+      - "5432:5432"
