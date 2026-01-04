@@ -1,5 +1,6 @@
-name: CI/CD - Integration Tests with Compose
+name: CI/CD - Integration Tests & Publish
 
+# kiedy uruchamiać pipeline
 on:
   push:
     branches: [ "main" ]
@@ -11,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # pobranie kodu
+      # pobranie kodu z repozytorium
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -22,27 +23,39 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # uruchomienie środowiska testowego
+      # uruchomienie środowiska testowego Docker Compose
       - name: Start services with Docker Compose
         run: |
           docker compose up -d --build
-          echo "Czekam 10 sekund na start bazy danych..."
-          sleep 10  # Proste oczekiwanie na gotowość Postgresa
+          
+          echo "Czekam 15 sekund na pełny start aplikacji i bazy danych..."
+          sleep 15
+          
+          echo "Sprawdzam stan kontenerów:"
+          docker compose ps -a
+          
+          echo "Wyświetlam ostatnie logi aplikacji (dla debugowania):"
+          docker compose logs web
+          # ------------------------------------------------------
 
-      # testy wewnątrz kontenera -T wyłącza interaktywny terminal
+      # uruchomienie testów wewnątrz działającego kontenera -T wyłącza interaktywność
       - name: Run Tests inside Docker
-        run: docker git compose exec -T web pytest
+        run: docker compose exec -T web pytest
 
-      # zatrzymanie kontenerów
+      # zatrzymanie i usunięcie kontenerów
       - name: Tear down Docker Compose
         run: docker compose down
 
-      # budowanie i publikacja finalnego obrazu jeśli testy przeszły
+      # konfiguracja narzędzia Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Budowanie i Publikacja
       - name: Build and Push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile
-          # push wtedy, gdy to nie jest pull request
+          # Pushuj tylko, jeśli to nie jest Pull Request
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ secrets.DOCKER_USERNAME }}/nowatorski_projekt_ind:latest
