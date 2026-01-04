@@ -17,6 +17,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      
+      - name: Uruchom moją własną akcję
+        uses: ./.github/actions/check-files  # ścieżka do akcji
+        with:
+          file_to_check: 'Dockerfile'
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -27,7 +32,7 @@ jobs:
       - name: Start services with Docker Compose
         run: |
           docker compose up -d --build
-          echo "⏳ Czekam 15 sekund na start..."
+          echo "Czekam 15 sekund na start..."
           sleep 15
           docker compose ps -a
           docker compose logs web
