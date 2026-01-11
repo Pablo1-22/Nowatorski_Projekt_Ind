@@ -9,9 +9,8 @@ services:
       - DATABASE_URL=postgresql://user:password@db:5432/myapp
     depends_on:
       - db
-    # Spełnia wymóg: aplikacja + baza danych (dwa kontenery) 
-
-  # Serwis bazy danych (komponent stanowy) [cite: 19]
+    
+  # Serwis bazy danych
   db:
     image: postgres:15-alpine
     environment:
@@ -20,3 +19,8 @@ services:
       POSTGRES_DB: myapp
     ports:
       - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+volumes:
+  postgres_data:
