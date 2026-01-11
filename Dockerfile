@@ -1,5 +1,4 @@
 # ETAP 1: Builder - instalujemy zależności
-# Używamy lekkiego obrazu pythona
 FROM python:3.9-slim as builder
 
 WORKDIR /app
@@ -12,7 +11,6 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 
 # ETAP 2: Finalny obraz uruchomieniowy
-# To jest wymagane na ocenę 3.5 (Multi-stage build) 
 FROM python:3.9-slim
 
 WORKDIR /app
